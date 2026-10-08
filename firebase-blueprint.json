@@ -1,0 +1,117 @@
+{
+  "entities": {
+    "councilor": {
+      "title": "Vereador",
+      "description": "Dados do parlamentar municipal com mandato",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 150 },
+        "nickname": { "type": "string", "maxLength": 80 },
+        "politicalParty": { "type": "string", "maxLength": 30 },
+        "role": { "type": "string", "maxLength": 80 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "photoUrl": { "type": "string", "maxLength": 150000 },
+        "isActive": { "type": "boolean" },
+        "legislature": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "politicalParty", "isActive"]
+    },
+    "committee": {
+      "title": "Comissão Permanente",
+      "description": "Comissão temática da câmara legislativa composta por 3 vereadores",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 150 },
+        "acronym": { "type": "string", "maxLength": 30 },
+        "description": { "type": "string", "maxLength": 500 },
+        "legislature": { "type": "string", "maxLength": 50 },
+        "isActive": { "type": "boolean" },
+        "members": { "type": "array" },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "acronym", "members", "isActive"]
+    },
+    "meeting": {
+      "title": "Reunião de Comissão",
+      "description": "Sessão oficial de comissão com pauta, presenças e ata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "committeeId": { "type": "string", "maxLength": 128 },
+        "committeeName": { "type": "string", "maxLength": 150 },
+        "date": { "type": "string", "maxLength": 30 },
+        "time": { "type": "string", "maxLength": 20 },
+        "location": { "type": "string", "maxLength": 120 },
+        "topic": { "type": "string", "maxLength": 500 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["agendada", "realizada", "cancelada"] },
+        "attendances": { "type": "array" },
+        "minutesText": { "type": "string", "maxLength": 15000 },
+        "minutesApproved": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "committeeId", "date", "topic", "status", "attendances"]
+    },
+    "systemSettings": {
+      "title": "Configurações do Sistema",
+      "description": "Configurações institucionais da Câmara Municipal e preferências de tema",
+      "type": "object",
+      "properties": {
+        "chamberName": { "type": "string", "maxLength": 150 },
+        "city": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "maxLength": 20 },
+        "legislature": { "type": "string", "maxLength": 50 },
+        "logoUrl": { "type": "string", "maxLength": 500 },
+        "activeTheme": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["chamberName", "activeTheme"]
+    },
+    "legislature": {
+      "title": "Legislatura Municipal",
+      "description": "Período de mandato parlamentar quadrienal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "period": { "type": "string", "maxLength": 50 },
+        "startDate": { "type": "string", "maxLength": 30 },
+        "endDate": { "type": "string", "maxLength": 30 },
+        "isActive": { "type": "boolean" },
+        "councilorIds": { "type": "array" },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "period", "isActive"]
+    }
+  },
+  "firestore": {
+    "/councilors/{councilorId}": {
+      "schema": "councilor",
+      "description": "Coleção de vereadores do município"
+    },
+    "/committees/{committeeId}": {
+      "schema": "committee",
+      "description": "Coleção de comissões parlamentares e seus membros"
+    },
+    "/meetings/{meetingId}": {
+      "schema": "meeting",
+      "description": "Coleção de reuniões de comissão com controle de frequência, justificativas e atas"
+    },
+    "/legislatures/{legislatureId}": {
+      "schema": "legislature",
+      "description": "Coleção de legislaturas e mandatos da Câmara Municipal"
+    },
+    "/settings/{settingId}": {
+      "schema": "systemSettings",
+      "description": "Configurações institucionais e tema visual"
+    }
+  }
+}

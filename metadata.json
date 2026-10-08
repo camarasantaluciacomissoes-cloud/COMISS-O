@@ -1,0 +1,6 @@
+{
+  "name": "Sistema de Controle Legislativo - Comissões da Câmara Municipal",
+  "description": "Sistema completo e robusto para gestão de reuniões de comissões parlamentares, controle de frequência e presenças de vereadores, termos de justificativa de faltas, atas e relatórios oficiais.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

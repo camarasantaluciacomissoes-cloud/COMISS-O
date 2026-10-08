@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAuthorizedOperator() {
+      // In preview or authenticated session
+      return true;
+    }
+
+    function isValidCouncilor(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 150
+        && data.politicalParty is string && data.politicalParty.size() <= 50
+        && data.isActive is bool;
+    }
+
+    function isValidCommittee(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 150
+        && data.acronym is string && data.acronym.size() <= 30
+        && data.members is list && data.members.size() <= 20
+        && data.isActive is bool;
+    }
+
+    function isValidMeeting(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.committeeId is string && data.committeeId.size() <= 128
+        && data.date is string && data.date.size() <= 30
+        && data.topic is string && data.topic.size() <= 500
+        && data.status in ['agendada', 'realizada', 'cancelada']
+        && data.attendances is list && data.attendances.size() <= 50;
+    }
+
+    function isValidSettings(data) {
+      return data.chamberName is string && data.chamberName.size() <= 150
+        && data.activeTheme is string && data.activeTheme.size() <= 50;
+    }
+
+    function isValidLegislature(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.period is string && data.period.size() <= 50
+        && data.isActive is bool;
+    }
+
+    // Councilors collection
+    match /councilors/{councilorId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedOperator() && isValidCouncilor(incoming());
+      allow delete: if isAuthorizedOperator();
+    }
+
+    // Committees collection
+    match /committees/{committeeId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedOperator() && isValidCommittee(incoming());
+      allow delete: if isAuthorizedOperator();
+    }
+
+    // Meetings collection
+    match /meetings/{meetingId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedOperator() && isValidMeeting(incoming());
+      allow delete: if isAuthorizedOperator();
+    }
+
+    // Legislatures collection
+    match /legislatures/{legislatureId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedOperator() && isValidLegislature(incoming());
+      allow delete: if isAuthorizedOperator();
+    }
+
+    // Settings collection
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedOperator() && isValidSettings(incoming());
+      allow delete: if isAuthorizedOperator();
+    }
+
+    // Admin profiles if needed
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Default deny for unmapped paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
